@@ -45,9 +45,10 @@
       <main class="mdl-layout__content">
         <div class="page-content">
           <!-- Your content goes here -->
-          <form action="#">
+          <form action="/chat/" method="POST">
+            {%csrf_token%}
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-              <input class="mdl-textfield__input" type="text" id="sample3" />
+              <input class="mdl-textfield__input" type="text" id="sample3" name="textmessage" />
               <label class="mdl-textfield__label" for="sample3">Text...</label>
             </div>
             <button
