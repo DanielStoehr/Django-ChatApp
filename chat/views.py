@@ -15,6 +15,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 @login_required(login_url="/login/")
 def index(request):
+    """
+    This is a view to render the chat html.
+    """
     if request.method == "POST":
         print(request.POST["textmessage"])
         my_chat = Chat.objects.get(id=1)
@@ -33,6 +36,9 @@ def index(request):
 
 
 def login_view(request):
+    """
+    This is a view to render the login html.
+    """
     redirect = request.GET.get("next")
     if redirect is None:
         redirect = "/chat/"
@@ -53,6 +59,9 @@ def login_view(request):
 
 
 def register_view(request):
+    """
+    This is a view to render the register html.
+    """
     if request.method == "POST":
         password1 = request.POST.get("password1")
         password2 = request.POST.get("password2")
@@ -73,5 +82,8 @@ def register_view(request):
 
 
 def logout_view(request):
+    """
+    this function makes a logout and redirects to login html.
+    """
     logout(request)
     return HttpResponseRedirect('/login')
