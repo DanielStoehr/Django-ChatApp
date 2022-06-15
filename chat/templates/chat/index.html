@@ -1,49 +1,32 @@
-{% extends 'base.html' %}
+{% extends 'shared/base.html' %}
 {% block content %}
-
-    <script>
-        async function sendMessage() {
-            let token = '{{ csrf_token }}'
-            let form = new FormData()
-            form.append('textmessage', messageField.value)
-            form.append('csrfmiddlewaretoken', token)
-            try {
-                await fetch('/chat/', {method: 'POST', body: form})
-                console.log('success')
-            } catch (e) {
-                console.log('An error occured', e)
-            }
-        }
-    </script>
-
+    {% load static %}
+    <script src="{% static 'js/script.js' %}"></script>
     {% if request.user.is_authenticated %}
         <div id="messageContainer">
             {% for message in messages %}
                 <p>
-                    <span class="color-gray">[{{ message.created_at }}]</span> {{ message.author }}:
+                    <span class="color-gray">[{{ message.created_at|date:"Y-m-d" }}]</span> {{ message.author }}:
                     <i>{{ message.text }}</i>
                 </p>
             {% endfor %}
         </div>
-
-        <form onsubmit="sendMessage(); return false" method="POST">
+        <form onsubmit="sendMessage('{{ request.user }}'); return false"
+              method="POST">
             {% csrf_token %}
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input" type="text" id="messageField" name="textmessage"/>
+                <input class="mdl-textfield__input"
+                       type="text"
+                       id="messageField"
+                       name="textmessage"/>
                 <label class="mdl-textfield__label" for="messageField">Text...</label>
             </div>
-            <button
-                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-            >
-                Send
-            </button>
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Send</button>
         </form>
-
     {% else %}
-
         <h1>Not logged in!</h1>
-        <p>Please log in. Please click <a href="/login">here</a>.</p>
-
+        <p>
+            Please log in. Please click <a href="/login">here</a>.
+        </p>
     {% endif %}
-
 {% endblock %}
