@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from .models import Chat, Message
 from django.http import JsonResponse
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -87,3 +88,34 @@ def logout_view(request):
     """
     logout(request)
     return HttpResponseRedirect('/login')
+
+
+@csrf_exempt
+def login_api_view(request):
+    if request.method != 'POST':
+        response = {"error": "method not allowed"}
+        # return HttpResponse(json.dumps(response), content="application/json")
+        return JsonResponse(response, status=400)
+
+    print('try to login', request.POST.get(
+        'username'), request.POST.get("password"))
+
+    user = authenticate(
+        username=request.POST.get("username"), password=request.POST.get("password")
+    )
+    if not user:
+        response = {"error": "invalid credentials"}
+        return JsonResponse(response, status=403)
+
+    login(request, user)
+    serialized_user = serializers.serialize('json', [user])
+    return HttpResponse(serialized_user, content_type="application/json")
+
+    #         return HttpResponseRedirect(request.POST.get("redirect"))
+    #     else:
+    #         return render(
+    #             request,
+    #             "chat/login.html",
+    #             {"wrong_password": True, "redirect": redirect},
+    #         )
+    # return HttpResponse(json.dumps(response), content="application/json")
